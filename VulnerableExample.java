@@ -34,7 +34,13 @@ public class VulnerableExample {
         String userId = request.getParameter("userId");
         try {
             XPath xPath = XPathFactory.newInstance().newXPath();
-            String expression = "/users/user[id/text()='" + userId + "']/name/text()";
+            String expression = "/users/user[id/text()=$userId]/name/text()";
+            xPath.setXPathVariableResolver(v -> {
+                if ("userId".equals(v.getLocalPart())) {
+                    return userId;
+                }
+                return null;
+            });
             String result = xPath.evaluate(expression, new InputSource(new StringReader(xmlString)));
             response.getWriter().println("User: " + result);
         } catch (Exception e) {
